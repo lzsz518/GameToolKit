@@ -25,7 +25,7 @@ private:
     QAction *actionDrawRect;
 private slots:
     void slotOpen();
-    void slotDrawRect();
+    void slotDrawRect(bool checked);
 };
 
 #endif // SPRITESPLITTER_H

@@ -16,12 +16,15 @@ SpriteSplitter::SpriteSplitter(QWidget *parent) :
     view = new ImageView;
     setCentralWidget(view);
 
-    connect(ui->actionOpen,&QAction::triggered,this,&SpriteSplitter::slotOpen);
 
     actionDrawRect = new QAction(QIcon(":/Resource/DrawRect.png"),tr("DrawLine"));
+    actionDrawRect->setCheckable(true);
     QToolBar *toolbar = new QToolBar;
     toolbar->addAction(actionDrawRect);
     addToolBar(toolbar);
+
+    connect(ui->actionOpen,&QAction::triggered,this,&SpriteSplitter::slotOpen);
+    connect(actionDrawRect,SIGNAL(triggered(bool)),this,SLOT(slotDrawRect(bool)));
 }
 
 SpriteSplitter::~SpriteSplitter()
@@ -41,7 +44,7 @@ void SpriteSplitter::slotOpen()
     }
 }
 
-void SpriteSplitter::slotDrawRect()
+void SpriteSplitter::slotDrawRect(bool checked)
 {
     MainWindowStatus status;
     if(actionDrawRect->isChecked())

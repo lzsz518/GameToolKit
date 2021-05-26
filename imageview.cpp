@@ -1,4 +1,6 @@
 #include "systemdefine.h"
+#include "mouseeventcreator.h"
+#include "mouseevent.h"
 #include <QMouseEvent>
 #include <QImage>
 #include <QPainter>
@@ -36,6 +38,7 @@ ImageView::ImageView(QWidget *parent, Qt::WindowFlags f)
     painter = new QPainter(this);
     painter->setPen(Qt::red);
 
+    mouse_event = nullptr;
     mainwindow_status = new MainWindowStatus;
 }
 
@@ -142,14 +145,24 @@ void ImageView::resizeEvent(QResizeEvent *e)
 
 void ImageView::mousePressEvent(QMouseEvent *event)
 {
+    if(event->button()==Qt::LeftButton)
+    {
+        if(mouse_event!=nullptr)
+            delete mouse_event;
+
+        left_button_down = true;
+        mouse_event = MouseEventCreator::CreateMouseEvent(mainwindow_status->CurrentDrawToolKit);
+        if(mouse_event != nullptr)
+            mouse_event->MousePressEvent(event);
+    }
 }
 
 void ImageView::mouseMoveEvent(QMouseEvent *event)
 {
     if(update_image != nullptr)
     {
-//        int x = event->x();
-//        int y = event->y();
+        //        int x = event->x();
+        //        int y = event->y();
         if(widget_display_area.contains(event->pos()))
         {
             posx = event->x()-widget_display_area.x();
@@ -171,6 +184,11 @@ void ImageView::mouseMoveEvent(QMouseEvent *event)
             }
 
 
+            if(left_button_down)
+            {
+                if(mouse_event!=nullptr)
+                    mouse_event->MouseMoveEvent(event);
+            }
             update();
         }
     }
@@ -178,7 +196,15 @@ void ImageView::mouseMoveEvent(QMouseEvent *event)
 
 void ImageView::mouseReleaseEvent(QMouseEvent *event)
 {
-
+    if(left_button_down)
+    {
+        if(mouse_event!=nullptr)
+        {
+            mouse_event->MouseReleaseEvent(event);
+            update();
+        }
+        left_button_down = false;
+    }
 }
 
 void ImageView::wheelEvent(QWheelEvent *event)
@@ -306,7 +332,7 @@ void ImageView::DrawClient()
     painter->begin(this);
     painter->drawImage(widget_display_area,*update_image,image_display_area);
 
-    painter->setPen(Qt::red);
-    painter->setFont(font);
+    if(mouse_event != nullptr)
+        mouse_event->draw(painter);
     painter->end();
 }
