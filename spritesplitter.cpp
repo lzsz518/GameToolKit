@@ -35,7 +35,7 @@ SpriteSplitter::~SpriteSplitter()
 void SpriteSplitter::slotOpen()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Open Image"), "/home", tr("Image Files (*.png)"));
+        tr("Open Image"), "/home/hwb/Pictures", tr("Image Files (*.png)"));
 
     if(!fileName.isEmpty())
     {

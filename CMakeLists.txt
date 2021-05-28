@@ -49,6 +49,7 @@ else()
     mouseeventcreator.cpp
     mouseeventcreator.h
     systemdefine.h
+    systemdefine.cpp
     resource.qrc
   )
 endif()

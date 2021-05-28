@@ -59,6 +59,7 @@ protected:
     QPainter *painter;
     MouseEvent *mouse_event;
     MainWindowStatus *mainwindow_status;
+    QPoint lt,rb;
 
 
     void AdjustScrollBar();

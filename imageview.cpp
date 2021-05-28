@@ -152,8 +152,19 @@ void ImageView::mousePressEvent(QMouseEvent *event)
 
         left_button_down = true;
         mouse_event = MouseEventCreator::CreateMouseEvent(mainwindow_status->CurrentDrawToolKit);
+
         if(mouse_event != nullptr)
-            mouse_event->MousePressEvent(event);
+        {
+            if(event->pos().x()>widget_display_area.x() &&
+                    event->pos().x()<widget_display_area.x()+widget_display_area.width() &&
+                    event->pos().y()>widget_display_area.y() &&
+                    event->pos().y()<widget_display_area.y()+widget_display_area.height())
+            {
+                mouse_event->MousePressEvent(event);
+                lt.setX((event->pos().x()-widget_display_area.x())/display_scale);
+                lt.setY((event->pos().y()-widget_display_area.y())/display_scale);
+            }
+        }
     }
 }
 
@@ -187,7 +198,15 @@ void ImageView::mouseMoveEvent(QMouseEvent *event)
             if(left_button_down)
             {
                 if(mouse_event!=nullptr)
-                    mouse_event->MouseMoveEvent(event);
+                {
+                    if(event->pos().x()>widget_display_area.x() &&
+                            event->pos().x()<widget_display_area.x()+widget_display_area.width() &&
+                            event->pos().y()>widget_display_area.y() &&
+                            event->pos().y()<widget_display_area.y()+widget_display_area.height())
+                    {
+                        mouse_event->MouseMoveEvent(event);
+                    }
+                }
             }
             update();
         }
@@ -200,8 +219,20 @@ void ImageView::mouseReleaseEvent(QMouseEvent *event)
     {
         if(mouse_event!=nullptr)
         {
-            mouse_event->MouseReleaseEvent(event);
-            update();
+            if(event->pos().x()>widget_display_area.x() &&
+                    event->pos().x()<widget_display_area.x()+widget_display_area.width() &&
+                    event->pos().y()>widget_display_area.y() &&
+                    event->pos().y()<widget_display_area.y()+widget_display_area.height())
+            {
+                mouse_event->MouseReleaseEvent(event);
+                update();
+                rb.setX((event->pos().x()-widget_display_area.x())/display_scale);
+                rb.setY((event->pos().y()-widget_display_area.y())/display_scale);
+                QRect rect(lt,rb);
+                QImage *img = CopyImageROI(rect ,*update_image);
+                if(img != nullptr)
+                    img->save("123.png");
+            }
         }
         left_button_down = false;
     }
