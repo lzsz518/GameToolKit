@@ -6,6 +6,9 @@
 class QScrollBar;
 class MouseEvent;
 struct MainWindowStatus;
+class SpriteRectangle;
+
+using std::vector;
 
 #define SCROLLBAR_SIZE 10
 
@@ -61,11 +64,13 @@ protected:
     MainWindowStatus *mainwindow_status;
     QPoint lt,rb;
 
+    vector<SpriteRectangle*> sprite_rect;
 
     void AdjustScrollBar();
     void AdjustScrollBarRange();
 
     void DrawClient();
+
 };
 
 #endif

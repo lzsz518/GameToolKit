@@ -49,6 +49,13 @@ ImageView::~ImageView()
         delete update_image;
         update_image = nullptr;
     }
+
+    for(int i=0;i<sprite_rect.size();++i)
+    {
+        delete sprite_rect[i];
+    }
+    sprite_rect.clear();
+
 }
 
 ////////////////////////
@@ -224,17 +231,42 @@ void ImageView::mouseReleaseEvent(QMouseEvent *event)
                     event->pos().y()>widget_display_area.y() &&
                     event->pos().y()<widget_display_area.y()+widget_display_area.height())
             {
-                mouse_event->MouseReleaseEvent(event);
-                update();
+                //                mouse_event->MouseReleaseEvent(event);
                 rb.setX((event->pos().x()-widget_display_area.x())/display_scale);
                 rb.setY((event->pos().y()-widget_display_area.y())/display_scale);
                 QRect rect(lt,rb);
-                QImage *img = CopyImageROI(rect ,*update_image);
-                if(img != nullptr)
-                    img->save("123.png");
+                SpriteRectangle *sr = FindRowAndColumnPair(*update_image,rect);
+
+                //                QImage *img = CopyImageROI(rect ,*update_image);
+
+                //                vector<pair<int,int>> rowpair;
+                //                vector<pair<int,int>> columnpair;
+                //                FindRowPair(*img, rowpair);
+                //                FindColumnPair(*img,columnpair);
+
+                //                QPainter painter(update_image);
+                //                for(int i=0;i<rowpair.size();++i)
+                //                {
+                //                    painter.drawLine(rect.x(),rowpair[i].first+rect.y(),rect.x()+rect.width(),rowpair[i].first+rect.y());
+                //                    painter.drawLine(rect.x(),rowpair[i].second+rect.y(),rect.x()+rect.width(),rowpair[i].second+rect.y());
+                //                }
+
+                //                for(int i=0;i<columnpair.size();++i)
+                //                {
+                //                    painter.drawLine(columnpair[i].first+rect.x(),rect.y(),columnpair[i].first+rect.x(),rect.y()+rect.height());
+                //                    painter.drawLine(columnpair[i].second+rect.x(),rect.y(),columnpair[i].second+rect.x(),rect.y()+rect.height());
+                //                }
+
+                //                if(img != nullptr)
+                //                    delete img;
+
+                left_button_down = false;
+                update();
+
+                if(sr != nullptr)
+                   sprite_rect.push_back(sr);
             }
         }
-        left_button_down = false;
     }
 }
 
@@ -363,7 +395,7 @@ void ImageView::DrawClient()
     painter->begin(this);
     painter->drawImage(widget_display_area,*update_image,image_display_area);
 
-    if(mouse_event != nullptr)
+    if((mouse_event != nullptr)&&(left_button_down))
         mouse_event->draw(painter);
     painter->end();
 }

@@ -16,9 +16,18 @@ struct MainWindowStatus
     QColor CurrentColor;
 };
 
+struct SpriteRectangle
+{
+    QRect image_area;
+    vector<pair<int,int>> rowpairs;
+    vector<vector<pair<int,int>>> columnpairs;
+};
+
 void FindRowPair(const QImage &mat, vector<pair<int,int>> &rowpairs);
 void FindColumnPair(const QImage &mat, vector<pair<int,int>> &columnpairs);
 
 QImage* CopyImageROI(const QRect &rect, const QImage &image);
+
+SpriteRectangle* FindRowAndColumnPair(const QImage &img, const QRect &rect);
 
 #endif // SYSTEMDEFINE_H

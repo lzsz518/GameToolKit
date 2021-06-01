@@ -49,10 +49,10 @@ void FindColumnPair(const QImage &mat, vector<pair<int,int>> &columnpairs)
     bool secondcolumn = false;
     pair<int,int> columnpair;
 
-    for(j=0;j<mat.height();++j)
+    for(j=0;j<mat.width();++j)
     {
         int sum = 0;
-        for(i=0;i<mat.width();++i)
+        for(i=0;i<mat.height();++i)
         {
 //            ptr = mat.ptr<unsigned char>(i);
             ptr = mat.scanLine(i);
@@ -90,6 +90,44 @@ QImage* CopyImageROI(const QRect &rect, const QImage &image)
             result->setPixel(j,i,image.pixel(j+rect.x(),i+rect.y()));
         }
     }
+
+    return result;
+}
+
+SpriteRectangle* FindRowAndColumnPair(const QImage &img, const QRect &rect)
+{
+    if(img.isNull())
+        return nullptr;
+
+    QImage *roi = CopyImageROI(rect,img);
+    if(roi == nullptr)
+        return nullptr;
+
+    SpriteRectangle *result = new SpriteRectangle;
+
+    if(result==nullptr)
+        return nullptr;
+
+    result->image_area = rect;
+
+    FindRowPair(*roi,result->rowpairs);
+    for(int i=0;i<result->rowpairs.size();++i)
+    {
+        QRect row_rect;
+        vector<pair<int,int>> cols;
+        row_rect.setX(rect.x());
+        row_rect.setY(result->rowpairs[i].first);
+        row_rect.setWidth(rect.width());
+        row_rect.setHeight(result->rowpairs[i].second-result->rowpairs[i].first);
+        QImage *roi_roi = CopyImageROI(row_rect,*roi);
+        if(roi_roi != nullptr)
+            FindColumnPair(*roi_roi,cols);
+        result->columnpairs.push_back(cols);
+        if(roi_roi!=nullptr)
+            delete roi_roi;
+    }
+
+    delete roi;
 
     return result;
 }
