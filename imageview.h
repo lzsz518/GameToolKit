@@ -70,6 +70,7 @@ protected:
     void AdjustScrollBarRange();
 
     void DrawClient();
+    void DrawSpriteRect(QPainter &painter);
 
 };
 
