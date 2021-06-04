@@ -237,28 +237,28 @@ void ImageView::mouseReleaseEvent(QMouseEvent *event)
                 QRect rect(lt,rb);
                 SpriteRectangle *sr = FindRowAndColumnPair(*update_image,rect);
 
-                //                QImage *img = CopyImageROI(rect ,*update_image);
+//                                QImage *img = CopyImageROI(rect ,*update_image);
 
-                //                vector<pair<int,int>> rowpair;
-                //                vector<pair<int,int>> columnpair;
-                //                FindRowPair(*img, rowpair);
-                //                FindColumnPair(*img,columnpair);
+//                                vector<pair<int,int>> rowpair;
+//                                vector<pair<int,int>> columnpair;
+//                                FindRowPair(*img, rowpair);
+//                                FindColumnPair(*img,columnpair);
 
-                //                QPainter painter(update_image);
-                //                for(int i=0;i<rowpair.size();++i)
-                //                {
-                //                    painter.drawLine(rect.x(),rowpair[i].first+rect.y(),rect.x()+rect.width(),rowpair[i].first+rect.y());
-                //                    painter.drawLine(rect.x(),rowpair[i].second+rect.y(),rect.x()+rect.width(),rowpair[i].second+rect.y());
-                //                }
+//                                QPainter painter(update_image);
+//                                for(int i=0;i<rowpair.size();++i)
+//                                {
+//                                    painter.drawLine(rect.x(),rowpair[i].first+rect.y(),rect.x()+rect.width(),rowpair[i].first+rect.y());
+//                                    painter.drawLine(rect.x(),rowpair[i].second+rect.y(),rect.x()+rect.width(),rowpair[i].second+rect.y());
+//                                }
 
-                //                for(int i=0;i<columnpair.size();++i)
-                //                {
-                //                    painter.drawLine(columnpair[i].first+rect.x(),rect.y(),columnpair[i].first+rect.x(),rect.y()+rect.height());
-                //                    painter.drawLine(columnpair[i].second+rect.x(),rect.y(),columnpair[i].second+rect.x(),rect.y()+rect.height());
-                //                }
+//                                for(int i=0;i<columnpair.size();++i)
+//                                {
+//                                    painter.drawLine(columnpair[i].first+rect.x(),rect.y(),columnpair[i].first+rect.x(),rect.y()+rect.height());
+//                                    painter.drawLine(columnpair[i].second+rect.x(),rect.y(),columnpair[i].second+rect.x(),rect.y()+rect.height());
+//                                }
 
-                //                if(img != nullptr)
-                //                    delete img;
+//                                if(img != nullptr)
+//                                    delete img;
 
                 left_button_down = false;
                 update();
@@ -395,7 +395,29 @@ void ImageView::DrawClient()
     painter->begin(this);
     painter->drawImage(widget_display_area,*update_image,image_display_area);
 
+    DrawSpriteRect(*painter);
+
+
     if((mouse_event != nullptr)&&(left_button_down))
         mouse_event->draw(painter);
     painter->end();
+}
+
+void ImageView::DrawSpriteRect(QPainter &painter)
+{
+    for(int k=0;k<sprite_rect.size();++k)
+    {
+        QRect s_rect;
+        for(int i=0;i<sprite_rect[k]->rowpairs.size();++i)
+        {
+            for(int j=0;j<sprite_rect[k]->columnpairs[i].size();++j)
+            {
+                s_rect.setX(sprite_rect[k]->columnpairs[i][j].first + widget_display_area.x());
+                s_rect.setY(sprite_rect[k]->rowpairs[i].first + widget_display_area.y() );
+                s_rect.setWidth(sprite_rect[k]->columnpairs[i][j].second-sprite_rect[k]->columnpairs[i][j].first);
+                s_rect.setHeight(sprite_rect[k]->rowpairs[i].second-sprite_rect[k]->rowpairs[i].first);
+                painter.drawRect(s_rect);
+            }
+        }
+    }
 }
