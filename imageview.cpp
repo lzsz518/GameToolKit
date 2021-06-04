@@ -1,4 +1,4 @@
-#include "systemdefine.h"
+﻿#include "systemdefine.h"
 #include "mouseeventcreator.h"
 #include "mouseevent.h"
 #include <QMouseEvent>
@@ -410,13 +410,32 @@ void ImageView::DrawSpriteRect(QPainter &painter)
         QRect s_rect;
         for(int i=0;i<sprite_rect[k]->rowpairs.size();++i)
         {
-            for(int j=0;j<sprite_rect[k]->columnpairs[i].size();++j)
+//            painter.drawLine(sprite_rect[k]->image_area.x(),
+//                                            sprite_rect[k]->rowpairs[i].first + sprite_rect[k]->image_area.y(),
+//                                sprite_rect[k]->image_area.x()+sprite_rect[k]->image_area.width(),
+//                                sprite_rect[k]->rowpairs[i].first + sprite_rect[k]->image_area.y());
+//            painter.drawLine(sprite_rect[k]->image_area.x(),
+//                                            sprite_rect[k]->rowpairs[i].second+ sprite_rect[k]->image_area.y(),
+//                                sprite_rect[k]->image_area.x()+sprite_rect[k]->image_area.width(),
+//                                sprite_rect[k]->rowpairs[i].second+ sprite_rect[k]->image_area.y());
+
+                             for(int j=0;j<sprite_rect[k]->columnpairs[i].size();++j)
             {
-                s_rect.setX(sprite_rect[k]->columnpairs[i][j].first + widget_display_area.x());
-                s_rect.setY(sprite_rect[k]->rowpairs[i].first + widget_display_area.y() );
+                s_rect.setX(sprite_rect[k]->columnpairs[i][j].first + sprite_rect[k]->image_area.x() + widget_display_area.x());
+                s_rect.setY(sprite_rect[k]->rowpairs[i].first + sprite_rect[k]->image_area.y() + widget_display_area.y());
                 s_rect.setWidth(sprite_rect[k]->columnpairs[i][j].second-sprite_rect[k]->columnpairs[i][j].first);
                 s_rect.setHeight(sprite_rect[k]->rowpairs[i].second-sprite_rect[k]->rowpairs[i].first);
                 painter.drawRect(s_rect);
+
+//                    painter.drawLine(sprite_rect[k]->columnpairs[i][j].first + sprite_rect[k]->image_area.x()+widget_display_area.x(),
+//                                            sprite_rect[k]->rowpairs[i].first + sprite_rect[k]->image_area.y(),
+//                                            sprite_rect[k]->columnpairs[i][j].first + sprite_rect[k]->image_area.x() + widget_display_area.x(),
+//                                            sprite_rect[k]->rowpairs[i].second + sprite_rect[k]->image_area.y());
+
+//                    painter.drawLine(sprite_rect[k]->columnpairs[i][j].second+ sprite_rect[k]->image_area.x()+widget_display_area.x(),
+//                                            sprite_rect[k]->rowpairs[i].first + sprite_rect[k]->image_area.y(),
+//                                            sprite_rect[k]->columnpairs[i][j].second+ sprite_rect[k]->image_area.x() + widget_display_area.x(),
+//                                            sprite_rect[k]->rowpairs[i].second + sprite_rect[k]->image_area.y());
             }
         }
     }

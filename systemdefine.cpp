@@ -115,7 +115,7 @@ SpriteRectangle* FindRowAndColumnPair(const QImage &img, const QRect &rect)
     {
         QRect row_rect;
         vector<pair<int,int>> cols;
-        row_rect.setX(rect.x());
+        row_rect.setX(0);
         row_rect.setY(result->rowpairs[i].first);
         row_rect.setWidth(rect.width());
         row_rect.setHeight(result->rowpairs[i].second-result->rowpairs[i].first);
