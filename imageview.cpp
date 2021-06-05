@@ -413,8 +413,8 @@ void ImageView::DrawSpriteRect(QPainter &painter)
         {
             for(int j=0;j<sprite_rect[k]->columnpairs[i].size();++j)
             {
-                s_rect.setX((sprite_rect[k]->columnpairs[i][j].first + sprite_rect[k]->image_area.x())*display_scale + widget_display_area.x());
-                s_rect.setY((sprite_rect[k]->rowpairs[i].first+ sprite_rect[k]->image_area.y())*display_scale + widget_display_area.y());
+                s_rect.setX((sprite_rect[k]->columnpairs[i][j].first + sprite_rect[k]->image_area.x())*display_scale + widget_display_area.x() - image_display_area.x()*display_scale);
+                s_rect.setY((sprite_rect[k]->rowpairs[i].first+ sprite_rect[k]->image_area.y())*display_scale + widget_display_area.y() - image_display_area.y()*display_scale);
                 s_rect.setWidth((sprite_rect[k]->columnpairs[i][j].second-sprite_rect[k]->columnpairs[i][j].first)*display_scale);
                 s_rect.setHeight((sprite_rect[k]->rowpairs[i].second-sprite_rect[k]->rowpairs[i].first)*display_scale);
 
