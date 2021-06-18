@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -39,13 +39,26 @@
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QTreeWidget" name="treeWidget">
-       <column>
-        <property name="text">
-         <string notr="true">1</string>
-        </property>
-       </column>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QTreeWidget" name="tw_boundingbox">
+         <column>
+          <property name="text">
+           <string>BoundingBox</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTreeWidget" name="tw_sprites">
+         <column>
+          <property name="text">
+           <string>Sprites</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>

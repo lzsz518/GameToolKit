@@ -10,6 +10,8 @@ enum DrawStatus{EMPTY,DRAWLINE,DRAWPENCIL,DRAWELLIPSE,DRAWRECTANGLE,DRAWPOLYGON}
 using std::vector;
 using std::pair;
 
+const QString SpriteMimeDataType = QStringLiteral("Image/Sprite");
+
 struct MainWindowStatus
 {
     DrawStatus CurrentDrawToolKit;

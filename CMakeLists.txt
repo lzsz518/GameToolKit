@@ -50,6 +50,8 @@ else()
     mouseeventcreator.h
     systemdefine.h
     systemdefine.cpp
+    spritelist.h
+    spritelist.cpp
     resource.qrc
   )
 endif()

@@ -32,17 +32,24 @@ protected slots:
 	void VScrollBarRangeChanged(int min, int max);
 	void HScrollBarRangeChanged(int min, int max);
 
-protected:
-        virtual void paintEvent(QPaintEvent *e);
-        virtual void closeEvent(QCloseEvent *e);
-        virtual void resizeEvent(QResizeEvent *e);
-        virtual void mousePressEvent(QMouseEvent *event);
-        virtual void mouseMoveEvent(QMouseEvent *event);
-        virtual void mouseReleaseEvent(QMouseEvent *event);
-        virtual void wheelEvent(QWheelEvent *event);
-        virtual void keyPressEvent(QKeyEvent *event);
-        virtual void keyReleaseEvent(QKeyEvent *event);
+signals:
+    void boundingboxGenerated(vector<QRect> boxs);
 
+protected:
+    virtual void paintEvent(QPaintEvent *e);
+    virtual void closeEvent(QCloseEvent *e);
+    virtual void resizeEvent(QResizeEvent *e);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
+    virtual void keyPressEvent(QKeyEvent *event);
+    virtual void keyReleaseEvent(QKeyEvent *event);
+
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dragMoveEvent(QDragMoveEvent *event) override;
+    void dragLeaveEvent(QDragLeaveEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
 protected:
     bool left_button_down;
     bool ctrl_key_down;
@@ -66,11 +73,16 @@ protected:
 
     vector<SpriteRectangle*> sprite_rect;
 
+    vector<QRect> sprite_boundingbox;
+
     void AdjustScrollBar();
     void AdjustScrollBarRange();
 
     void DrawClient();
     void DrawSpriteRect(QPainter &painter);
+    void RowColumnPairToBoundingbox(const vector<SpriteRectangle*> row_column_pair, vector<QRect> &boundingbox);
+    void DrawBoundingbox(QPainter &painter);
+    QPoint ScreenPointToImagePoint(const QPoint &p);
 
 };
 

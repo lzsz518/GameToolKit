@@ -1,6 +1,13 @@
 ﻿#include "systemdefine.h"
 #include "mouseeventcreator.h"
 #include "mouseevent.h"
+#include "spritelist.h"
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QDrag>
+#include <QMimeData>
 #include <QMouseEvent>
 #include <QImage>
 #include <QPainter>
@@ -41,6 +48,8 @@ ImageView::ImageView(QWidget *parent, Qt::WindowFlags f)
     mouse_event = nullptr;
     mainwindow_status = new MainWindowStatus;
     setMouseTracking(true);
+
+    setAcceptDrops(true);
 }
 
 ImageView::~ImageView()
@@ -238,34 +247,25 @@ void ImageView::mouseReleaseEvent(QMouseEvent *event)
                 QRect rect(lt,rb);
                 SpriteRectangle *sr = FindRowAndColumnPair(*update_image,rect);
 
-//                                QImage *img = CopyImageROI(rect ,*update_image);
-
-//                                vector<pair<int,int>> rowpair;
-//                                vector<pair<int,int>> columnpair;
-//                                FindRowPair(*img, rowpair);
-//                                FindColumnPair(*img,columnpair);
-
-//                                QPainter painter(update_image);
-//                                for(int i=0;i<rowpair.size();++i)
-//                                {
-//                                    painter.drawLine(rect.x(),rowpair[i].first+rect.y(),rect.x()+rect.width(),rowpair[i].first+rect.y());
-//                                    painter.drawLine(rect.x(),rowpair[i].second+rect.y(),rect.x()+rect.width(),rowpair[i].second+rect.y());
-//                                }
-
-//                                for(int i=0;i<columnpair.size();++i)
-//                                {
-//                                    painter.drawLine(columnpair[i].first+rect.x(),rect.y(),columnpair[i].first+rect.x(),rect.y()+rect.height());
-//                                    painter.drawLine(columnpair[i].second+rect.x(),rect.y(),columnpair[i].second+rect.x(),rect.y()+rect.height());
-//                                }
-
-//                                if(img != nullptr)
-//                                    delete img;
-
                 left_button_down = false;
-                update();
 
                 if(sr != nullptr)
                    sprite_rect.push_back(sr);
+
+                vector<QRect> rects;
+                RowColumnPairToBoundingbox(sprite_rect,rects);
+
+                emit boundingboxGenerated(rects);
+
+                sprite_boundingbox.insert(sprite_boundingbox.end(),rects.begin(),rects.end());
+
+                for(int i=0;i<sprite_rect.size();++i)
+                {
+                    delete sprite_rect[i];
+                }
+                sprite_rect.clear();
+
+                update();
             }
         }
     }
@@ -307,7 +307,28 @@ void ImageView::keyReleaseEvent(QKeyEvent *event)
         ctrl_key_down = false;
 }
 
+void ImageView::dragEnterEvent(QDragEnterEvent *event)
+{
+    if(event->mimeData()->hasFormat(SpriteMimeDataType))
+        event->accept();
+    else
+        event->ignore();
+}
 
+void ImageView::dragLeaveEvent(QDragLeaveEvent *event)
+{
+
+}
+
+void ImageView::dragMoveEvent(QDragMoveEvent *event)
+{
+
+}
+
+void ImageView::dropEvent(QDropEvent *event)
+{
+
+}
 ////////////////////////
 //private function
 
@@ -396,7 +417,8 @@ void ImageView::DrawClient()
     painter->begin(this);
     painter->drawImage(widget_display_area,*update_image,image_display_area);
 
-    DrawSpriteRect(*painter);
+//    DrawSpriteRect(*painter);
+    DrawBoundingbox(*painter);
 
 
     if((mouse_event != nullptr)&&(left_button_down))
@@ -418,8 +440,53 @@ void ImageView::DrawSpriteRect(QPainter &painter)
                 s_rect.setWidth((sprite_rect[k]->columnpairs[i][j].second-sprite_rect[k]->columnpairs[i][j].first)*display_scale);
                 s_rect.setHeight((sprite_rect[k]->rowpairs[i].second-sprite_rect[k]->rowpairs[i].first)*display_scale);
 
-                painter.drawRect(s_rect);
+//                painter.drawRect(s_rect);
             }
         }
     }
 }
+
+void ImageView::RowColumnPairToBoundingbox(const vector<SpriteRectangle *> row_column_pair, vector<QRect> &boundingbox)
+{
+    for(int k=0;k<row_column_pair.size();++k)
+    {
+        QRect s_rect;
+        for(int i=0;i<row_column_pair[k]->rowpairs.size();++i)
+        {
+            for(int j=0;j<row_column_pair[k]->columnpairs[i].size();++j)
+            {
+                s_rect.setX((row_column_pair[k]->columnpairs[i][j].first + row_column_pair[k]->image_area.x()));
+                s_rect.setY((row_column_pair[k]->rowpairs[i].first+ row_column_pair[k]->image_area.y()));
+                s_rect.setWidth((row_column_pair[k]->columnpairs[i][j].second-row_column_pair[k]->columnpairs[i][j].first));
+                s_rect.setHeight((row_column_pair[k]->rowpairs[i].second-row_column_pair[k]->rowpairs[i].first));
+                boundingbox.push_back(s_rect);
+            }
+        }
+    }
+}
+
+void ImageView::DrawBoundingbox(QPainter &painter)
+{
+    QRect rect_src,rect_dst;
+
+    for(int i=0;i<sprite_boundingbox.size();++i)
+    {
+        rect_src = sprite_boundingbox[i];
+        rect_dst.setX(rect_src.x()*display_scale + widget_display_area.x() - image_display_area.x()*display_scale);
+        rect_dst.setY(rect_src.y()*display_scale + widget_display_area.y() - image_display_area.y()*display_scale);
+        rect_dst.setWidth(rect_src.width()*display_scale);
+        rect_dst.setHeight(rect_src.height()*display_scale);
+
+        painter.drawRect(rect_dst);
+    }
+}
+
+QPoint ScreenPointToImagePoint(const QPoint &p)
+{
+    QPoint result;
+
+
+
+    return result;
+}
+
