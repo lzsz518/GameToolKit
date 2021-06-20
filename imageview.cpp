@@ -60,7 +60,7 @@ ImageView::~ImageView()
         update_image = nullptr;
     }
 
-    for(int i=0;i<sprite_rect.size();++i)
+    for(size_t i=0;i<sprite_rect.size();++i)
     {
         delete sprite_rect[i];
     }
@@ -180,6 +180,24 @@ void ImageView::mousePressEvent(QMouseEvent *event)
                 mouse_event->MousePressEvent(event);
                 lt.setX((event->pos().x()-widget_display_area.x())/display_scale);
                 lt.setY((event->pos().y()-widget_display_area.y())/display_scale);
+            }
+        }
+        else
+        {            if(event->pos().x()>widget_display_area.x() &&
+                    event->pos().x()<widget_display_area.x()+widget_display_area.width() &&
+                    event->pos().y()>widget_display_area.y() &&
+                    event->pos().y()<widget_display_area.y()+widget_display_area.height())
+            {
+                ppp = event->pos();
+                QPoint temp_pos = ScreenPointToImagePoint(event->pos());
+                QImage img(*update_image);
+                QPainter painter(&img);
+                QPen pen;
+                pen.setColor(Qt::red);
+                pen.setWidth(2);
+                painter.setPen(pen);
+                painter.drawEllipse(temp_pos,15,15);
+                img.save("./1.png");
             }
         }
     }
@@ -423,37 +441,23 @@ void ImageView::DrawClient()
 
     if((mouse_event != nullptr)&&(left_button_down))
         mouse_event->draw(painter);
+
+    QPen pen;
+    pen.setColor(Qt::red);
+    pen.setWidth(2);
+    painter->setPen(pen);
+    painter->drawEllipse(ppp,15,15);
     painter->end();
-}
-
-void ImageView::DrawSpriteRect(QPainter &painter)
-{
-    for(int k=0;k<sprite_rect.size();++k)
-    {
-        QRect s_rect;
-        for(int i=0;i<sprite_rect[k]->rowpairs.size();++i)
-        {
-            for(int j=0;j<sprite_rect[k]->columnpairs[i].size();++j)
-            {
-                s_rect.setX((sprite_rect[k]->columnpairs[i][j].first + sprite_rect[k]->image_area.x())*display_scale + widget_display_area.x() - image_display_area.x()*display_scale);
-                s_rect.setY((sprite_rect[k]->rowpairs[i].first+ sprite_rect[k]->image_area.y())*display_scale + widget_display_area.y() - image_display_area.y()*display_scale);
-                s_rect.setWidth((sprite_rect[k]->columnpairs[i][j].second-sprite_rect[k]->columnpairs[i][j].first)*display_scale);
-                s_rect.setHeight((sprite_rect[k]->rowpairs[i].second-sprite_rect[k]->rowpairs[i].first)*display_scale);
-
-//                painter.drawRect(s_rect);
-            }
-        }
-    }
 }
 
 void ImageView::RowColumnPairToBoundingbox(const vector<SpriteRectangle *> row_column_pair, vector<QRect> &boundingbox)
 {
-    for(int k=0;k<row_column_pair.size();++k)
+    for(size_t k=0;k<row_column_pair.size();++k)
     {
         QRect s_rect;
-        for(int i=0;i<row_column_pair[k]->rowpairs.size();++i)
+        for(size_t i=0;i<row_column_pair[k]->rowpairs.size();++i)
         {
-            for(int j=0;j<row_column_pair[k]->columnpairs[i].size();++j)
+            for(size_t j=0;j<row_column_pair[k]->columnpairs[i].size();++j)
             {
                 s_rect.setX((row_column_pair[k]->columnpairs[i][j].first + row_column_pair[k]->image_area.x()));
                 s_rect.setY((row_column_pair[k]->rowpairs[i].first+ row_column_pair[k]->image_area.y()));
@@ -469,7 +473,7 @@ void ImageView::DrawBoundingbox(QPainter &painter)
 {
     QRect rect_src,rect_dst;
 
-    for(int i=0;i<sprite_boundingbox.size();++i)
+    for(size_t i=0;i<sprite_boundingbox.size();++i)
     {
         rect_src = sprite_boundingbox[i];
         rect_dst.setX(rect_src.x()*display_scale + widget_display_area.x() - image_display_area.x()*display_scale);
@@ -481,11 +485,15 @@ void ImageView::DrawBoundingbox(QPainter &painter)
     }
 }
 
-QPoint ScreenPointToImagePoint(const QPoint &p)
+QPoint ImageView::ScreenPointToImagePoint(const QPoint &p)
 {
     QPoint result;
 
+//    result.setX((p.x()-widget_display_area.x())/display_scale   + image_display_area.x()/display_scale);
+//    result.setY((p.y()-widget_display_area.y())/display_scale   + image_display_area.y()/display_scale);
 
+    result.setX((p.x()-widget_display_area.x())/display_scale   + image_display_area.x());
+    result.setY((p.y()-widget_display_area.y())/display_scale   + image_display_area.y());
 
     return result;
 }
