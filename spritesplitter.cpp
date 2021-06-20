@@ -2,6 +2,9 @@
 #include <QToolBar>
 #include <QAction>
 #include <QFileDialog>
+#include <QDockWidget>
+#include <QListWidget>
+#include <QTreeWidgetItem>
 #include "systemdefine.h"
 #include "imageview.h"
 #include "spritesplitter.h"
@@ -23,8 +26,18 @@ SpriteSplitter::SpriteSplitter(QWidget *parent) :
     toolbar->addAction(actionDrawRect);
     addToolBar(toolbar);
 
+    boundingbox_root = new QTreeWidgetItem;
+    ui->tw_boundingbox->insertTopLevelItem(0,boundingbox_root);
+
     connect(ui->actionOpen,&QAction::triggered,this,&SpriteSplitter::slotOpen);
     connect(actionDrawRect,SIGNAL(triggered(bool)),this,SLOT(slotDrawRect(bool)));
+    connect(view,&ImageView::boundingboxGenerated,this,&SpriteSplitter::slotAccpetBoundingbox);
+
+
+    docker = new QDockWidget(this);
+    sprite_list = new QListWidget(this);
+    docker->setWidget(sprite_list);
+    addDockWidget(Qt::RightDockWidgetArea,docker);
 }
 
 SpriteSplitter::~SpriteSplitter()
@@ -59,3 +72,17 @@ void SpriteSplitter::slotDrawRect(bool checked)
 
     view->SetMainWindowStatus(status);
 }
+
+void SpriteSplitter::slotAccpetBoundingbox(vector<QRect> boxs)
+{
+    for(int i=0;i<boxs.size();++i)
+    {
+        QString str;
+        QTreeWidgetItem *box_item = new QTreeWidgetItem;
+        str = QString("%1,%2,%3,%4").arg(boxs[i].x()).arg(boxs[i].y()).arg(boxs[i].width()).arg(boxs[i].height());
+        box_item->setText(0,str);
+        boundingbox_root->addChild(box_item);
+
+    }
+}
+
