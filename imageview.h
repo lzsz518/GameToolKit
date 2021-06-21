@@ -46,6 +46,8 @@ protected:
     virtual void keyPressEvent(QKeyEvent *event) override;
     virtual void keyReleaseEvent(QKeyEvent *event) override;
 
+    virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
+
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dragMoveEvent(QDragMoveEvent *event) override;
     void dragLeaveEvent(QDragLeaveEvent *event) override;
@@ -70,7 +72,6 @@ protected:
     MouseEvent *mouse_event;
     MainWindowStatus *mainwindow_status;
     QPoint lt,rb;
-    QPoint ppp;
 
     vector<SpriteRectangle*> sprite_rect;
 
@@ -83,6 +84,7 @@ protected:
     void RowColumnPairToBoundingbox(const vector<SpriteRectangle*> row_column_pair, vector<QRect> &boundingbox);
     void DrawBoundingbox(QPainter &painter);
     QPoint ScreenPointToImagePoint(const QPoint &p);
+    QRect FindSprite(const QPoint &p);
 
 };
 

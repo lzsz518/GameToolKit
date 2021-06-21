@@ -182,24 +182,6 @@ void ImageView::mousePressEvent(QMouseEvent *event)
                 lt.setY((event->pos().y()-widget_display_area.y())/display_scale);
             }
         }
-        else
-        {            if(event->pos().x()>widget_display_area.x() &&
-                    event->pos().x()<widget_display_area.x()+widget_display_area.width() &&
-                    event->pos().y()>widget_display_area.y() &&
-                    event->pos().y()<widget_display_area.y()+widget_display_area.height())
-            {
-                ppp = event->pos();
-                QPoint temp_pos = ScreenPointToImagePoint(event->pos());
-                QImage img(*update_image);
-                QPainter painter(&img);
-                QPen pen;
-                pen.setColor(Qt::red);
-                pen.setWidth(2);
-                painter.setPen(pen);
-                painter.drawEllipse(temp_pos,15,15);
-                img.save("./1.png");
-            }
-        }
     }
 }
 
@@ -325,6 +307,27 @@ void ImageView::keyReleaseEvent(QKeyEvent *event)
         ctrl_key_down = false;
 }
 
+void ImageView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+
+    if(event->pos().x()>widget_display_area.x() &&
+            event->pos().x()<widget_display_area.x()+widget_display_area.width() &&
+            event->pos().y()>widget_display_area.y() &&
+            event->pos().y()<widget_display_area.y()+widget_display_area.height())
+    {
+        QPoint p = ScreenPointToImagePoint(event->pos());
+        QRect rect = FindSprite(p);
+        if(!rect.isNull())
+        {
+            QImage *img = CopyImageROI(rect,*update_image);
+            if(img==nullptr)
+                return;
+            img->save("./1.png");
+            delete img;
+        }
+    }
+}
+
 void ImageView::dragEnterEvent(QDragEnterEvent *event)
 {
     if(event->mimeData()->hasFormat(SpriteMimeDataType))
@@ -442,11 +445,6 @@ void ImageView::DrawClient()
     if((mouse_event != nullptr)&&(left_button_down))
         mouse_event->draw(painter);
 
-    QPen pen;
-    pen.setColor(Qt::red);
-    pen.setWidth(2);
-    painter->setPen(pen);
-    painter->drawEllipse(ppp,15,15);
     painter->end();
 }
 
@@ -496,5 +494,16 @@ QPoint ImageView::ScreenPointToImagePoint(const QPoint &p)
     result.setY((p.y()-widget_display_area.y())/display_scale   + image_display_area.y());
 
     return result;
+}
+
+QRect ImageView::FindSprite(const QPoint &p)
+{
+    for(size_t i=0;i<sprite_boundingbox.size();++i)
+    {
+        if(sprite_boundingbox[i].contains(p))
+            return sprite_boundingbox[i];
+    }
+
+    return QRect();
 }
 
