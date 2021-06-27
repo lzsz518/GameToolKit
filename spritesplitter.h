@@ -38,6 +38,7 @@ private slots:
     void slotOpen();
     void slotDrawRect(bool checked);
     void slotAccpetBoundingbox(vector<QRect> boxs);
+    void slotSpriteSelected(QImage *img);
 };
 
 #endif // SPRITESPLITTER_H

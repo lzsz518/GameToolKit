@@ -322,8 +322,9 @@ void ImageView::mouseDoubleClickEvent(QMouseEvent *event)
             QImage *img = CopyImageROI(rect,*update_image);
             if(img==nullptr)
                 return;
-            img->save("./1.png");
-            delete img;
+            emit spriteSelected(img);
+//            img->save("./1.png");
+//            delete img;
         }
     }
 }

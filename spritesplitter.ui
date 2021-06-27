@@ -28,6 +28,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionSaveSprite"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -53,7 +54,7 @@
         <widget class="QTreeWidget" name="tw_sprites">
          <column>
           <property name="text">
-           <string>Sprites</string>
+           <string>Sprite</string>
           </property>
          </column>
         </widget>
@@ -66,6 +67,11 @@
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSaveSprite">
+   <property name="text">
+    <string>SaveSpriteCoordinate</string>
    </property>
   </action>
  </widget>

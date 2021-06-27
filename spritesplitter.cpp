@@ -5,6 +5,7 @@
 #include <QDockWidget>
 #include <QListWidget>
 #include <QTreeWidgetItem>
+#include <QListWidgetItem>
 #include "systemdefine.h"
 #include "imageview.h"
 #include "spritesplitter.h"
@@ -32,12 +33,14 @@ SpriteSplitter::SpriteSplitter(QWidget *parent) :
     connect(ui->actionOpen,&QAction::triggered,this,&SpriteSplitter::slotOpen);
     connect(actionDrawRect,SIGNAL(triggered(bool)),this,SLOT(slotDrawRect(bool)));
     connect(view,&ImageView::boundingboxGenerated,this,&SpriteSplitter::slotAccpetBoundingbox);
+    connect(view,&ImageView::spriteSelected,this,&SpriteSplitter::slotSpriteSelected);
 
 
     docker = new QDockWidget(this);
     sprite_list = new QListWidget(this);
     docker->setWidget(sprite_list);
     addDockWidget(Qt::RightDockWidgetArea,docker);
+    sprite_list->setIconSize(QSize(30,30));
 }
 
 SpriteSplitter::~SpriteSplitter()
@@ -84,5 +87,16 @@ void SpriteSplitter::slotAccpetBoundingbox(vector<QRect> boxs)
         boundingbox_root->addChild(box_item);
 
     }
+}
+
+void SpriteSplitter::slotSpriteSelected(QImage *img)
+{
+    QPixmap pixmap = QPixmap::fromImage(*img);
+    QListWidgetItem *pieceItem = new QListWidgetItem;
+    pieceItem->setIcon(QIcon(pixmap));
+    pieceItem->setData(Qt::UserRole, QVariant(pixmap));
+//    pieceItem->setData(Qt::UserRole+1, location);
+    pieceItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
+    sprite_list->addItem(pieceItem);
 }
 
