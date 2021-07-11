@@ -34,7 +34,7 @@ protected slots:
 
 signals:
     void boundingboxGenerated(vector<QRect> boxs);
-    void spriteSelected(QImage * img);
+    void spriteSelected(QImage * img, QRect rect);
 
 protected:
     virtual void paintEvent(QPaintEvent *e) override;

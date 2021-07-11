@@ -45,7 +45,7 @@
         <widget class="QTreeWidget" name="tw_boundingbox">
          <column>
           <property name="text">
-           <string>BoundingBox</string>
+           <string>Bounding Box</string>
           </property>
          </column>
         </widget>
@@ -54,7 +54,7 @@
         <widget class="QTreeWidget" name="tw_sprites">
          <column>
           <property name="text">
-           <string>Sprite</string>
+           <string>Sprite Sheet</string>
           </property>
          </column>
         </widget>

@@ -5,6 +5,13 @@
 #include <QImage>
 #include <QColor>
 
+#define SPRITE_TYPE Qt::UserRole +1
+
+#define SPRITE_ROOT 1
+#define SPRITE_ITEM 2
+#define SPRITE_POS Qt::UserRole +3
+#define SPRITE_IMG Qt::UserRole +4
+
 enum DrawStatus{EMPTY,DRAWLINE,DRAWPENCIL,DRAWELLIPSE,DRAWRECTANGLE,DRAWPOLYGON};
 
 using std::vector;

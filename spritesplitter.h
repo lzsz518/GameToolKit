@@ -12,6 +12,8 @@ using std::vector;
 
 class ImageView;
 class QDockWidget;
+class QLabel;
+class QTimer;
 class QListWidget;
 class QTreeWidgetItem;
 
@@ -29,16 +31,34 @@ private:
     ImageView *view;
 
     QAction *actionDrawRect;
+    QAction *actionAddSpriteSheet;
+    QAction *actionShowSpriteSheet;
+
+    QMenu *menuAddSpriteSheet;
+    QMenu *menuShowSpriteSheet;
 
     QDockWidget *docker;
     QListWidget  *sprite_list;
+    QLabel *sprite_label;
+    QTimer *sprite_timer;
+
+    int current_sprite;
 
     QTreeWidgetItem *boundingbox_root;
+
+    QTreeWidgetItem *spritesheet_root;
+
+    void createMenu();
 private slots:
     void slotOpen();
     void slotDrawRect(bool checked);
     void slotAccpetBoundingbox(vector<QRect> boxs);
-    void slotSpriteSelected(QImage *img);
+    void slotSpriteSelected(QImage *img, QRect rect);
+    void slotSpritesheetContextMenuRequested(const QPoint &pos);
+    void slotCreateSpriteSheet();
+    void slotShowSpriteSheet();
+    void slotSpriteTimer();
 };
+
 
 #endif // SPRITESPLITTER_H
