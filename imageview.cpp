@@ -50,6 +50,7 @@ ImageView::ImageView(QWidget *parent, Qt::WindowFlags f)
     setMouseTracking(true);
 
     setAcceptDrops(true);
+    setMouseTracking(true);
 }
 
 ImageView::~ImageView()
@@ -273,7 +274,7 @@ void ImageView::mouseReleaseEvent(QMouseEvent *event)
 
 void ImageView::wheelEvent(QWheelEvent *event)
 {
-    if(ctrl_key_down)
+//    if(ctrl_key_down)
     {
         QPoint dp = event->angleDelta()/8;
         if(dp.y()<0)

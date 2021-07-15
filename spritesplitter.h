@@ -32,15 +32,16 @@ private:
 
     QAction *actionDrawRect;
     QAction *actionAddSpriteSheet;
+    QAction *actionWriteJson;
     QAction *actionShowSpriteSheet;
+    QAction *actionEditSpriteSheet;
 
-    QMenu *menuAddSpriteSheet;
-    QMenu *menuShowSpriteSheet;
+    QMenu *menuSpriteSheetRoot;
+    QMenu *menuSpriteSheet;
 
     QDockWidget *docker;
-    QListWidget  *sprite_list;
-    QLabel *sprite_label;
     QTimer *sprite_timer;
+    QString spritefilename;
 
     int current_sprite;
 
@@ -57,7 +58,9 @@ private slots:
     void slotSpritesheetContextMenuRequested(const QPoint &pos);
     void slotCreateSpriteSheet();
     void slotShowSpriteSheet();
+    void slotEditSpriteSheet();
     void slotSpriteTimer();
+    void slotWriteJson();
 };
 
 

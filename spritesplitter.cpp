@@ -7,6 +7,10 @@
 #include <QVariant>
 #include <QDockWidget>
 #include <QListWidget>
+#include <QMessageBox>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 #include <QTreeWidgetItem>
 #include <QListWidgetItem>
 #include <QContextMenuEvent>
@@ -49,21 +53,11 @@ SpriteSplitter::SpriteSplitter(QWidget *parent) :
     connect(view,&ImageView::spriteSelected,this,&SpriteSplitter::slotSpriteSelected);
     connect(ui->tw_sprites, &QTreeWidget::customContextMenuRequested,this,&SpriteSplitter::slotSpritesheetContextMenuRequested);
 
-
-    docker = new QDockWidget(this);
-    sprite_list = new QListWidget(this);
-    docker->setWidget(sprite_list);
-    addDockWidget(Qt::RightDockWidgetArea,docker);
-    sprite_list->setIconSize(QSize(64,64));
-
     sprite_timer = new QTimer;
     connect(sprite_timer,&QTimer::timeout,this,&SpriteSplitter::slotSpriteTimer);
 
-    sprite_label = new QLabel;
-    sprite_label->setMinimumSize(128,128);
-    sprite_label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-
     ui->tw_sprites->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->tw_sprites->expandAll();
 }
 
 SpriteSplitter::~SpriteSplitter()
@@ -75,15 +69,21 @@ SpriteSplitter::~SpriteSplitter()
 void SpriteSplitter::createMenu()
 {
     actionAddSpriteSheet = new QAction("Add Sprite sheet");
-    menuAddSpriteSheet = new QMenu;
-    menuAddSpriteSheet->addAction(actionAddSpriteSheet);
+    actionWriteJson = new QAction("Write Json");
+    menuSpriteSheetRoot = new QMenu;
+    menuSpriteSheetRoot->addAction(actionAddSpriteSheet);
+    menuSpriteSheetRoot->addAction(actionWriteJson);
 
-    actionShowSpriteSheet = new QAction("Show Sprite sheet");
-    menuShowSpriteSheet = new QMenu;
-    menuShowSpriteSheet->addAction(actionShowSpriteSheet);
+    actionShowSpriteSheet = new QAction("Show");
+    actionEditSpriteSheet = new QAction("Edit");
+    menuSpriteSheet = new QMenu;
+    menuSpriteSheet->addAction(actionShowSpriteSheet);
+    menuSpriteSheet->addAction(actionEditSpriteSheet);
 
     connect(actionAddSpriteSheet,&QAction::triggered,this,&SpriteSplitter::slotCreateSpriteSheet);
+    connect(actionWriteJson,&QAction::triggered,this,&SpriteSplitter::slotWriteJson);
     connect(actionShowSpriteSheet,&QAction::triggered,this,&SpriteSplitter::slotShowSpriteSheet);
+    connect(actionEditSpriteSheet,&QAction::triggered,this,&SpriteSplitter::slotEditSpriteSheet);
 }
 
 void SpriteSplitter::slotOpen()
@@ -95,6 +95,7 @@ void SpriteSplitter::slotOpen()
     {
         QImage image(fileName);
         view->ImgUpdate(&image);
+        spritefilename = fileName;
     }
 }
 
@@ -129,8 +130,6 @@ void SpriteSplitter::slotAccpetBoundingbox(vector<QRect> boxs)
 
 void SpriteSplitter::slotSpriteSelected(QImage *img, QRect rect)
 {
-
-
     QTreeWidgetItem *item = ui->tw_sprites->currentItem();
 
     if(item->data(0,SPRITE_TYPE)==SPRITE_ITEM)
@@ -142,6 +141,7 @@ void SpriteSplitter::slotSpriteSelected(QImage *img, QRect rect)
         QVariant var = QVariant::fromValue(img);
         childItem->setData(0,SPRITE_IMG,var);
         item->addChild(childItem);
+        ui->tw_sprites->expandAll();
     }
 }
 
@@ -152,12 +152,12 @@ void SpriteSplitter::slotSpritesheetContextMenuRequested(const QPoint &pos)
     QVariant var = index.data(SPRITE_TYPE);
     if(var.toInt() == SPRITE_ROOT)
     {
-        menuAddSpriteSheet->exec(QCursor::pos());
+        menuSpriteSheetRoot->exec(QCursor::pos());
     }
 
     if(var.toInt() == SPRITE_ITEM)
     {
-        menuShowSpriteSheet->exec(QCursor::pos());
+        menuSpriteSheet->exec(QCursor::pos());
     }
 }
 
@@ -168,6 +168,8 @@ void SpriteSplitter::slotCreateSpriteSheet()
     QString str = QString("SpriteSheet%1").arg(childcount);
     item->setData(0,Qt::DisplayRole,str);
     item->setData(0,SPRITE_TYPE,SPRITE_ITEM);
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
+    ui->tw_sprites->expandAll();
     spritesheet_root->addChild(item);
 }
 
@@ -176,7 +178,7 @@ void SpriteSplitter::slotShowSpriteSheet()
     QTreeWidgetItem *item = ui->tw_sprites->currentItem();
     if(item->data(0,SPRITE_TYPE)==SPRITE_ITEM)
     {
-        sprite_list->clear();
+        ui->sprite_list->clear();
         int childcount = item->childCount();
         for(int i=0; i< childcount;++i)
         {
@@ -187,26 +189,85 @@ void SpriteSplitter::slotShowSpriteSheet()
                 pieceItem->setData(Qt::UserRole, QVariant(pixmap));
             //    pieceItem->setData(Qt::UserRole+1, location);
                 pieceItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
-                sprite_list->addItem(pieceItem);
+                ui->sprite_list->addItem(pieceItem);
         }
         current_sprite = 0;
         sprite_timer->start(300);
-        sprite_label->show();
     }
+}
+
+void SpriteSplitter::slotEditSpriteSheet()
+{
+    QTreeWidgetItem *item = ui->tw_sprites->currentItem();
+    if(item->data(0,SPRITE_TYPE)==SPRITE_ITEM)
+    {
+        ui->tw_sprites->editItem(item,0);
+    }
+
 }
 
 void SpriteSplitter::slotSpriteTimer()
 {
-    if(sprite_list->count()==0)
+    if(ui->sprite_list->count()==0)
         return;
 
-    QListWidgetItem *item = sprite_list->item(current_sprite);
+    QListWidgetItem *item = ui->sprite_list->item(current_sprite);
     QPixmap pixmap = item->icon().pixmap(item->icon().availableSizes()[0]);
-    sprite_label->setPixmap(pixmap);
+    ui->sprite_label->setPixmap(pixmap);
 
     ++current_sprite;
-    if(current_sprite % sprite_list->count() ==0)
+    if(current_sprite % ui->sprite_list->count() ==0)
         current_sprite = 0;
+}
+
+void SpriteSplitter::slotWriteJson()
+{
+    if(spritefilename.isEmpty())
+    {
+        QMessageBox::information(nullptr,"","Please open a image.");
+        return;
+    }
+
+    QFileInfo fileinfo(spritefilename);
+    QString basename = fileinfo.completeBaseName();
+    QFile file(QApplication::applicationDirPath()+"/"+basename+".json");
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        QMessageBox::information(nullptr,"","Json file create failed.");
+    }
+
+    QJsonDocument jdoc;
+    QJsonObject jobj;
+    QJsonArray jarr;
+    jobj["SpriteFileName"] = spritefilename;
+
+    QTreeWidgetItem *topitem = ui->tw_sprites->topLevelItem(0);
+    for(size_t i=0; i<topitem->childCount();++i)
+    {
+        QJsonObject jspritesheet;
+        QJsonArray jsheetarray;
+        QTreeWidgetItem *childitem = topitem->child(i);
+        jspritesheet["Name"] = childitem->text(0);
+
+        for(size_t j=0; j<childitem->childCount(); ++j)
+        {
+            QJsonObject jrectobj;
+            QTreeWidgetItem *rectitem = childitem->child(j);
+            QRect rect = rectitem->data(0,SPRITE_POS).toRect();
+            jrectobj["left"] = QString("%1").arg(rect.x());
+            jrectobj["Top"] = QString("%1").arg(rect.y());
+            jrectobj["Width"] = QString("%1").arg(rect.width());
+            jrectobj["Height"] = QString("%1").arg(rect.height());
+            jsheetarray.append(jrectobj);
+        }
+        jspritesheet["Rect"] = jsheetarray;
+        jarr.append(jspritesheet);
+ }
+    jobj["SpriteSheets"] = jarr;
+
+    jdoc.setObject(jobj);
+    file.write(jdoc.toJson(QJsonDocument::Indented));
+    file.close();
 }
 
 
