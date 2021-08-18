@@ -27,6 +27,7 @@ public:
 	float GetDisplayScale();
 
     void SetMainWindowStatus(const MainWindowStatus &status);
+    void ReplacePixelColor(const QColor src, const QColor dst);
 public slots:
 protected slots:
 	void VScrollBarRangeChanged(int min, int max);

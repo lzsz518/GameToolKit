@@ -33,6 +33,7 @@ private:
     QAction *actionDrawRect;
     QAction *actionAddSpriteSheet;
     QAction *actionWriteJson;
+    QAction *actionWriteSprite;
     QAction *actionShowSpriteSheet;
     QAction *actionEditSpriteSheet;
 
@@ -61,6 +62,8 @@ private slots:
     void slotEditSpriteSheet();
     void slotSpriteTimer();
     void slotWriteJson();
+    void slotWriteSprite();
+    void slotReplacePixelColor();
 };
 
 

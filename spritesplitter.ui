@@ -30,7 +30,14 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSaveSprite"/>
    </widget>
+   <widget class="QMenu" name="menuToolkit">
+    <property name="title">
+     <string>Toolkit</string>
+    </property>
+    <addaction name="actionRelpaceColor"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuToolkit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -101,6 +108,11 @@
   <action name="actionSaveSprite">
    <property name="text">
     <string>SaveSpriteCoordinate</string>
+   </property>
+  </action>
+  <action name="actionRelpaceColor">
+   <property name="text">
+    <string>RelpaceColor</string>
    </property>
   </action>
  </widget>

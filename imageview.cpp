@@ -92,6 +92,12 @@ void ImageView::SetMainWindowStatus(const MainWindowStatus &status)
     mainwindow_status->CurrentDrawToolKit = status.CurrentDrawToolKit;
 }
 
+void ImageView::ReplacePixelColor(const QColor src, const QColor dst)
+{
+    ::ReplacePixelColor(*update_image,update_image->pixelColor(0,0),dst);
+    update();
+}
+
 void ImageView::ImgUpdate(QImage *image)
 {
 //    if(update_image==nullptr)

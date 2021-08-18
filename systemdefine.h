@@ -39,4 +39,6 @@ QImage* CopyImageROI(const QRect &rect, const QImage &image);
 
 SpriteRectangle* FindRowAndColumnPair(const QImage &img, const QRect &rect);
 
+void ReplacePixelColor(QImage &img, QColor src, QColor dst);
+
 #endif // SYSTEMDEFINE_H

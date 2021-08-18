@@ -52,6 +52,7 @@ SpriteSplitter::SpriteSplitter(QWidget *parent) :
     connect(view,&ImageView::boundingboxGenerated,this,&SpriteSplitter::slotAccpetBoundingbox);
     connect(view,&ImageView::spriteSelected,this,&SpriteSplitter::slotSpriteSelected);
     connect(ui->tw_sprites, &QTreeWidget::customContextMenuRequested,this,&SpriteSplitter::slotSpritesheetContextMenuRequested);
+    connect(ui->actionRelpaceColor,&QAction::triggered,this,&SpriteSplitter::slotReplacePixelColor);
 
     sprite_timer = new QTimer;
     connect(sprite_timer,&QTimer::timeout,this,&SpriteSplitter::slotSpriteTimer);
@@ -70,9 +71,11 @@ void SpriteSplitter::createMenu()
 {
     actionAddSpriteSheet = new QAction("Add Sprite sheet");
     actionWriteJson = new QAction("Write Json");
+    actionWriteSprite = new QAction("Write Sprite");
     menuSpriteSheetRoot = new QMenu;
     menuSpriteSheetRoot->addAction(actionAddSpriteSheet);
     menuSpriteSheetRoot->addAction(actionWriteJson);
+    menuSpriteSheetRoot->addAction(actionWriteSprite);
 
     actionShowSpriteSheet = new QAction("Show");
     actionEditSpriteSheet = new QAction("Edit");
@@ -82,6 +85,7 @@ void SpriteSplitter::createMenu()
 
     connect(actionAddSpriteSheet,&QAction::triggered,this,&SpriteSplitter::slotCreateSpriteSheet);
     connect(actionWriteJson,&QAction::triggered,this,&SpriteSplitter::slotWriteJson);
+    connect(actionWriteSprite,&QAction::triggered,this,&SpriteSplitter::slotWriteSprite);
     connect(actionShowSpriteSheet,&QAction::triggered,this,&SpriteSplitter::slotShowSpriteSheet);
     connect(actionEditSpriteSheet,&QAction::triggered,this,&SpriteSplitter::slotEditSpriteSheet);
 }
@@ -268,6 +272,34 @@ void SpriteSplitter::slotWriteJson()
     jdoc.setObject(jobj);
     file.write(jdoc.toJson(QJsonDocument::Indented));
     file.close();
+}
+
+void SpriteSplitter::slotWriteSprite()
+{
+    QString foldername = QFileDialog::getExistingDirectory();
+    if(foldername.isEmpty())
+        return;
+
+    QTreeWidgetItem *topitem = ui->tw_sprites->topLevelItem(0);
+    for(size_t i=0; i<topitem->childCount();++i)
+    {
+        QTreeWidgetItem *childitem = topitem->child(i);
+        QString spritename_root = childitem->text(0);
+
+        int bits = QString("%1").arg(childitem->childCount()).size();
+        for(size_t j=0; j<childitem->childCount(); ++j)
+        {
+            QTreeWidgetItem *rectitem = childitem->child(j);
+            QImage *img = rectitem->data(0,SPRITE_IMG).value<QImage*>();
+            QString spritename_child = foldername + "/" + spritename_root + QString("%1").arg(j,bits) + ".png";
+            img->save(spritename_child,"PNG",100);
+        }
+ }
+}
+
+void SpriteSplitter::slotReplacePixelColor()
+{
+    view->ReplacePixelColor(QColor(),QColor(0,0,0,0));
 }
 
 

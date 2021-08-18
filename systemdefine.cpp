@@ -132,6 +132,21 @@ SpriteRectangle* FindRowAndColumnPair(const QImage &img, const QRect &rect)
     return result;
 }
 
+void ReplacePixelColor(QImage &img, QColor src, QColor dst)
+{
+    if(img.isNull())
+        return;
+
+    for(int i=0; i<img.height();++i)
+    {
+        for(int j=0; j<img.width(); ++j)
+        {
+            if(img.pixelColor(j,i) == src)
+                img.setPixelColor(j,i,dst);
+        }
+    }
+}
+
 //void SpriteSeparate()
 //{
 //    if(operator_data==nullptr)
