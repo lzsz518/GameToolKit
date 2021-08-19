@@ -64,6 +64,7 @@ private slots:
     void slotWriteJson();
     void slotWriteSprite();
     void slotReplacePixelColor();
+    void slotSaveAs();
 };
 
 

@@ -98,6 +98,14 @@ void ImageView::ReplacePixelColor(const QColor src, const QColor dst)
     update();
 }
 
+void ImageView::SaveAs(const QString &filename)
+{
+    if(update_image != nullptr)
+    {
+        update_image->save(filename,"PNG",100);
+    }
+}
+
 void ImageView::ImgUpdate(QImage *image)
 {
 //    if(update_image==nullptr)

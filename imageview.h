@@ -28,6 +28,7 @@ public:
 
     void SetMainWindowStatus(const MainWindowStatus &status);
     void ReplacePixelColor(const QColor src, const QColor dst);
+    void SaveAs(const QString &filename);
 public slots:
 protected slots:
 	void VScrollBarRangeChanged(int min, int max);

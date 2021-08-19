@@ -35,6 +35,7 @@
      <string>Toolkit</string>
     </property>
     <addaction name="actionRelpaceColor"/>
+    <addaction name="actionSave_as"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuToolkit"/>
@@ -113,6 +114,11 @@
   <action name="actionRelpaceColor">
    <property name="text">
     <string>RelpaceColor</string>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="text">
+    <string>Save as...</string>
    </property>
   </action>
  </widget>

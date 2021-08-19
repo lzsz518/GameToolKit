@@ -53,7 +53,7 @@ SpriteSplitter::SpriteSplitter(QWidget *parent) :
     connect(view,&ImageView::spriteSelected,this,&SpriteSplitter::slotSpriteSelected);
     connect(ui->tw_sprites, &QTreeWidget::customContextMenuRequested,this,&SpriteSplitter::slotSpritesheetContextMenuRequested);
     connect(ui->actionRelpaceColor,&QAction::triggered,this,&SpriteSplitter::slotReplacePixelColor);
-
+    connect(ui->actionSave_as,&QAction::triggered,this,&SpriteSplitter::slotSaveAs);
     sprite_timer = new QTimer;
     connect(sprite_timer,&QTimer::timeout,this,&SpriteSplitter::slotSpriteTimer);
 
@@ -300,6 +300,16 @@ void SpriteSplitter::slotWriteSprite()
 void SpriteSplitter::slotReplacePixelColor()
 {
     view->ReplacePixelColor(QColor(),QColor(0,0,0,0));
+}
+
+void SpriteSplitter::slotSaveAs()
+{
+    QString filename = QFileDialog::getSaveFileName();
+    if(filename.isEmpty())
+        return;
+
+    if(view != nullptr)
+        view->SaveAs(filename);
 }
 
 
