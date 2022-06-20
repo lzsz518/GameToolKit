@@ -17,7 +17,9 @@ enum DrawStatus{EMPTY,DRAWLINE,DRAWPENCIL,DRAWELLIPSE,DRAWRECTANGLE,DRAWPOLYGON}
 using std::vector;
 using std::pair;
 
-const QString SpriteMimeDataType = QStringLiteral("Image/Sprite");
+class QTreeWidgetItem;
+
+static const  QString SpriteMimeDataType = QStringLiteral("Image/Sprite");
 
 struct MainWindowStatus
 {
@@ -40,5 +42,7 @@ QImage* CopyImageROI(const QRect &rect, const QImage &image);
 SpriteRectangle* FindRowAndColumnPair(const QImage &img, const QRect &rect);
 
 void ReplacePixelColor(QImage &img, QColor src, QColor dst);
+
+void FindMaxWH(const QTreeWidgetItem *item, int &maxwidth, int &maxheight);
 
 #endif // SYSTEMDEFINE_H

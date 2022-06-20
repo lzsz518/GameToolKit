@@ -1,3 +1,4 @@
+#include "qtreewidget.h"
 #include "systemdefine.h"
 
 void FindRowPair(const QImage &mat, vector<pair<int,int>> &rowpairs)
@@ -144,6 +145,24 @@ void ReplacePixelColor(QImage &img, QColor src, QColor dst)
             if(img.pixelColor(j,i) == src)
                 img.setPixelColor(j,i,dst);
         }
+    }
+}
+
+void FindMaxWH(const QTreeWidgetItem *item, int &maxwidth, int &maxheight)
+{
+    maxwidth = 0;
+    maxheight = 0;
+    if(item==nullptr)
+        return;
+
+    for(size_t i = 0;i < item->childCount(); ++i)
+    {
+        QTreeWidgetItem *rectitem = item->child(i);
+        QImage *img = rectitem->data(0,SPRITE_IMG).value<QImage*>();
+        if(img->width()>maxwidth)
+            maxwidth = img->width();
+        if(img->height() > maxheight)
+            maxheight = img->height();
     }
 }
 

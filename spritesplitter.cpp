@@ -72,10 +72,12 @@ void SpriteSplitter::createMenu()
     actionAddSpriteSheet = new QAction("Add Sprite sheet");
     actionWriteJson = new QAction("Write Json");
     actionWriteSprite = new QAction("Write Sprite");
+    actionWriteSpriteSameSize = new QAction("Write Sprite Same Size");
     menuSpriteSheetRoot = new QMenu;
     menuSpriteSheetRoot->addAction(actionAddSpriteSheet);
     menuSpriteSheetRoot->addAction(actionWriteJson);
     menuSpriteSheetRoot->addAction(actionWriteSprite);
+    menuSpriteSheetRoot->addAction(actionWriteSpriteSameSize);
 
     actionShowSpriteSheet = new QAction("Show");
     actionEditSpriteSheet = new QAction("Edit");
@@ -86,6 +88,7 @@ void SpriteSplitter::createMenu()
     connect(actionAddSpriteSheet,&QAction::triggered,this,&SpriteSplitter::slotCreateSpriteSheet);
     connect(actionWriteJson,&QAction::triggered,this,&SpriteSplitter::slotWriteJson);
     connect(actionWriteSprite,&QAction::triggered,this,&SpriteSplitter::slotWriteSprite);
+    connect(actionWriteSpriteSameSize,&QAction::triggered,this,&SpriteSplitter::slotWriteSpriteSameSize);
     connect(actionShowSpriteSheet,&QAction::triggered,this,&SpriteSplitter::slotShowSpriteSheet);
     connect(actionEditSpriteSheet,&QAction::triggered,this,&SpriteSplitter::slotEditSpriteSheet);
 }
@@ -294,12 +297,72 @@ void SpriteSplitter::slotWriteSprite()
             QString spritename_child = foldername + "/" + spritename_root + QString("%1").arg(j,bits) + ".png";
             img->save(spritename_child,"PNG",100);
         }
- }
+    }
+}
+
+void SpriteSplitter::slotWriteSpriteSameSize()
+{
+    QString foldername = QFileDialog::getExistingDirectory();
+    if(foldername.isEmpty())
+        return;
+
+    QTreeWidgetItem *topitem = ui->tw_sprites->topLevelItem(0);
+    int max_width = 0;
+    int max_height = 0;
+
+    for(size_t i=0; i<topitem->childCount();++i)
+    {
+        QTreeWidgetItem *childitem = topitem->child(i);
+        QString spritename_root = childitem->text(0);
+
+        int bits = QString("%1").arg(childitem->childCount()).size();
+
+        FindMaxWH(childitem,max_width,max_height);
+
+        for(size_t j=0; j<childitem->childCount(); ++j)
+        {
+            QTreeWidgetItem *rectitem = childitem->child(j);
+            QImage *img = rectitem->data(0,SPRITE_IMG).value<QImage*>();
+            QString spritename_child = foldername + "/" + spritename_root + QString("%1").arg(j,bits) + ".png";
+            if(img->width()<max_width || img->height()<max_height)
+            {
+                int newwidth = 0;
+                int newheight = 0;
+                if(img->width()<max_width)
+                    newwidth = max_width;
+                else
+                    newwidth = img->width();
+                if(img->height()<max_height)
+                    newheight = max_height;
+                else
+                    newheight = max_height;
+
+                QImage *tempimg = new QImage(QSize(newwidth,newheight),img->format());
+                tempimg->fill(QColor(0,0,0,0));
+
+                int widthoffset = (tempimg->width() - img->width())*0.5;
+                int heightoffset = (tempimg->height() - img->height())*0.5;
+
+                int byteprepix = img->depth()>>3;
+                for(int line = 0; line < img->height(); ++line)
+                {
+                    memcpy(tempimg->scanLine(line + heightoffset) + (widthoffset * byteprepix), img->constScanLine(line),img->bytesPerLine());
+                }
+
+                tempimg->save(spritename_child,"PNG",100);
+                delete tempimg;
+            }
+            else
+            {
+                img->save(spritename_child,"PNG",100);
+            }
+        }
+    }
 }
 
 void SpriteSplitter::slotReplacePixelColor()
 {
-    view->ReplacePixelColor(QColor(),QColor(0,0,0,0));
+    view->ReplacePixelColor(QColor(),QColor(255,255,255,255));
 }
 
 void SpriteSplitter::slotSaveAs()

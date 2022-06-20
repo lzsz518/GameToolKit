@@ -34,9 +34,9 @@ private:
     QAction *actionAddSpriteSheet;
     QAction *actionWriteJson;
     QAction *actionWriteSprite;
+    QAction *actionWriteSpriteSameSize;
     QAction *actionShowSpriteSheet;
     QAction *actionEditSpriteSheet;
-
     QMenu *menuSpriteSheetRoot;
     QMenu *menuSpriteSheet;
 
@@ -63,6 +63,7 @@ private slots:
     void slotSpriteTimer();
     void slotWriteJson();
     void slotWriteSprite();
+    void slotWriteSpriteSameSize();
     void slotReplacePixelColor();
     void slotSaveAs();
 };
