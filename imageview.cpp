@@ -1,7 +1,6 @@
 ﻿#include "systemdefine.h"
 #include "mouseeventcreator.h"
 #include "mouseevent.h"
-#include "spritelist.h"
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDragMoveEvent>
@@ -193,8 +192,12 @@ void ImageView::mousePressEvent(QMouseEvent *event)
                     event->pos().y()<widget_display_area.y()+widget_display_area.height())
             {
                 mouse_event->MousePressEvent(event);
-                lt.setX((event->pos().x()-widget_display_area.x())/display_scale);
-                lt.setY((event->pos().y()-widget_display_area.y())/display_scale);
+                lt.setX((event->pos().x()-widget_display_area.x())/display_scale + image_display_area.x());
+                lt.setY((event->pos().y()-widget_display_area.y())/display_scale + image_display_area.y());
+                QPen pen;
+                pen.setWidth(10);
+                painter->setPen(pen);
+                painter->drawPoint(lt);
             }
         }
     }
@@ -257,8 +260,10 @@ void ImageView::mouseReleaseEvent(QMouseEvent *event)
                     event->pos().y()<widget_display_area.y()+widget_display_area.height())
             {
                 //                mouse_event->MouseReleaseEvent(event);
-                rb.setX((event->pos().x()-widget_display_area.x())/display_scale);
-                rb.setY((event->pos().y()-widget_display_area.y())/display_scale);
+                int mouse_x = event->pos().x();
+                int mouse_y = event->pos().y();
+                rb.setX((mouse_x-widget_display_area.x())/display_scale + image_display_area.x());
+                rb.setY((mouse_y-widget_display_area.y())/display_scale + image_display_area.y());
                 QRect rect(lt,rb);
                 SpriteRectangle *sr = FindRowAndColumnPair(*update_image,rect);
 

@@ -319,6 +319,9 @@ void SpriteSplitter::slotWriteSpriteSameSize()
 
         FindMaxWH(childitem,max_width,max_height);
 
+        QImage *bigImg = new QImage(QSize(max_width*childitem->childCount(),max_height),childitem->child(0)->data(0,SPRITE_IMG).value<QImage*>()->format());
+        bigImg->fill(QColor(0,0,0,0));
+
         for(size_t j=0; j<childitem->childCount(); ++j)
         {
             QTreeWidgetItem *rectitem = childitem->child(j);
@@ -337,26 +340,34 @@ void SpriteSplitter::slotWriteSpriteSameSize()
                 else
                     newheight = max_height;
 
-                QImage *tempimg = new QImage(QSize(newwidth,newheight),img->format());
-                tempimg->fill(QColor(0,0,0,0));
+//                QImage *tempimg = new QImage(QSize(newwidth,newheight),img->format());
+//                tempimg->fill(QColor(0,0,0,0));
 
-                int widthoffset = (tempimg->width() - img->width())*0.5;
-                int heightoffset = (tempimg->height() - img->height())*0.5;
+                int widthoffset = (newwidth - img->width())*0.5;
+                int heightoffset = (newheight - img->height())*0.5;
 
                 int byteprepix = img->depth()>>3;
                 for(int line = 0; line < img->height(); ++line)
                 {
-                    memcpy(tempimg->scanLine(line + heightoffset) + (widthoffset * byteprepix), img->constScanLine(line),img->bytesPerLine());
+//                    memcpy(tempimg->scanLine(line + heightoffset) + (widthoffset * byteprepix), img->constScanLine(line),img->bytesPerLine());
+                    memcpy(bigImg->scanLine(line + heightoffset) + (j*max_width*byteprepix +(widthoffset * byteprepix)), img->constScanLine(line),img->bytesPerLine());
                 }
 
-                tempimg->save(spritename_child,"PNG",100);
-                delete tempimg;
+//                tempimg->save(spritename_child,"PNG",100);
+//                delete tempimg;
             }
             else
             {
-                img->save(spritename_child,"PNG",100);
+//                img->save(spritename_child,"PNG",100);
+                int byteprepix = img->depth()>>3;
+                for(int line = 0; line < img->height(); ++line)
+                {
+                    memcpy(bigImg->scanLine(line) + (j*max_width * byteprepix), img->constScanLine(line),img->bytesPerLine());
+                }
             }
         }
+        bigImg->save(foldername  + "/" + spritename_root + QString("%1").arg(i,bits) + ".png", "PNG", 100);
+        delete bigImg;
     }
 }
 
