@@ -54,6 +54,7 @@ SpriteSplitter::SpriteSplitter(QWidget *parent) :
     connect(ui->tw_sprites, &QTreeWidget::customContextMenuRequested,this,&SpriteSplitter::slotSpritesheetContextMenuRequested);
     connect(ui->actionRelpaceColor,&QAction::triggered,this,&SpriteSplitter::slotReplacePixelColor);
     connect(ui->actionSave_as,&QAction::triggered,this,&SpriteSplitter::slotSaveAs);
+    connect(ui->actionSelectAll,&QAction::triggered,this,&SpriteSplitter::slotSelectAllSprites);
     sprite_timer = new QTimer;
     connect(sprite_timer,&QTimer::timeout,this,&SpriteSplitter::slotSpriteTimer);
 
@@ -386,6 +387,19 @@ void SpriteSplitter::slotSaveAs()
         view->SaveAs(filename);
 }
 
+void SpriteSplitter::slotSelectAllSprites()
+{
+    if(view != nullptr)
+    {
+        vector<QImage*> imgs;
+        vector<QRect> rects;
+        view->getAllSprite(imgs,rects);
+        for(int i=0; i< imgs.size(); ++i)
+        {
+            slotSpriteSelected(imgs[i], rects[i]);
+        }
+    }
+}
 
 
 

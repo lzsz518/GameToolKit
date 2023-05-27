@@ -66,6 +66,7 @@ private slots:
     void slotWriteSpriteSameSize();
     void slotReplacePixelColor();
     void slotSaveAs();
+    void slotSelectAllSprites();
 };
 
 

@@ -105,6 +105,16 @@ void ImageView::SaveAs(const QString &filename)
     }
 }
 
+void ImageView::getAllSprite(vector<QImage*> &imgs, vector<QRect> &rects)
+{
+    rects = sprite_boundingbox;
+    for(auto rect : rects)
+    {
+        QImage *img = CopyImageROI(rect, *update_image);
+        imgs.push_back(img);
+    }
+}
+
 void ImageView::ImgUpdate(QImage *image)
 {
 //    if(update_image==nullptr)
@@ -207,12 +217,10 @@ void ImageView::mouseMoveEvent(QMouseEvent *event)
 {
     if(update_image != nullptr)
     {
-        //        int x = event->x();
-        //        int y = event->y();
         if(widget_display_area.contains(event->pos()))
         {
-            posx = event->x()-widget_display_area.x();
-            posy = event->y()-widget_display_area.y();
+            posx = event->pos().x()-widget_display_area.x();
+            posy = event->pos().y()-widget_display_area.y();
             if(widget_display_area.width()<image_display_area.width()*display_scale)
                 posx *= (double)image_display_area.width()/(double)widget_display_area.width();
             else
@@ -259,11 +267,8 @@ void ImageView::mouseReleaseEvent(QMouseEvent *event)
                     event->pos().y()>widget_display_area.y() &&
                     event->pos().y()<widget_display_area.y()+widget_display_area.height())
             {
-                //                mouse_event->MouseReleaseEvent(event);
-                int mouse_x = event->pos().x();
-                int mouse_y = event->pos().y();
-                rb.setX((mouse_x-widget_display_area.x())/display_scale + image_display_area.x());
-                rb.setY((mouse_y-widget_display_area.y())/display_scale + image_display_area.y());
+                rb.setX((event->pos().x()-widget_display_area.x())/display_scale + image_display_area.x());
+                rb.setY((event->pos().y()-widget_display_area.y())/display_scale + image_display_area.y());
                 QRect rect(lt,rb);
                 SpriteRectangle *sr = FindRowAndColumnPair(*update_image,rect);
 
