@@ -51,6 +51,7 @@ private:
     QTreeWidgetItem *spritesheet_root;
 
     void createMenu();
+    void AddBorderForImage(QImage &img);
 private slots:
     void slotOpen();
     void slotDrawRect(bool checked);

@@ -533,3 +533,4 @@ QRect ImageView::FindSprite(const QPoint &p)
     return QRect();
 }
 
+

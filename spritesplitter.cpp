@@ -11,6 +11,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QPainter>
 #include <QTreeWidgetItem>
 #include <QListWidgetItem>
 #include <QContextMenuEvent>
@@ -102,8 +103,10 @@ void SpriteSplitter::slotOpen()
     if(!fileName.isEmpty())
     {
         QImage image(fileName);
+        AddBorderForImage(image);
         view->ImgUpdate(&image);
         spritefilename = fileName;
+        this->setWindowTitle(spritefilename);
     }
 }
 
@@ -402,12 +405,23 @@ void SpriteSplitter::slotSelectAllSprites()
 }
 
 
+void SpriteSplitter::AddBorderForImage(QImage& img)
+{
+    int borderWidth = 30;
+    QColor borderColor(0,0,0,0);
 
+    int newWidth = img.width() + (2 * borderWidth);
+    int newHeight = img.height() + (2 * borderWidth);
 
+    QImage borderedImage(newWidth, newHeight, img.format());
+    borderedImage.fill(borderColor);
 
+    QPainter painter(&borderedImage);
+    painter.drawImage(borderWidth, borderWidth, img);
+    painter.end();
 
-
-
+    img = borderedImage;
+}
 
 
 

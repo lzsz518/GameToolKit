@@ -90,6 +90,7 @@ protected:
     QPoint ScreenPointToImagePoint(const QPoint &p);
     QRect FindSprite(const QPoint &p);
 
+
 };
 
 #endif
