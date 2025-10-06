@@ -1,4 +1,5 @@
-﻿#include <QIcon>
+﻿#include <QRgb>
+#include <QIcon>
 #include <QLabel>
 #include <QTimer>
 #include <QToolBar>
@@ -322,8 +323,17 @@ void SpriteSplitter::slotWriteSpriteSameSize()
         int bits = QString("%1").arg(childitem->childCount()).size();
 
         FindMaxWH(childitem,max_width,max_height);
+        int gap = 8;
+        /*
+        QImage *bigImg = new QImage(QSize((max_width)*childitem->childCount()+
+            gap* (childitem->childCount()+1),max_height),
+            childitem->child(0)->data(0,SPRITE_IMG).value<QImage*>()->format());
+        */
 
-        QImage *bigImg = new QImage(QSize(max_width*childitem->childCount(),max_height),childitem->child(0)->data(0,SPRITE_IMG).value<QImage*>()->format());
+		max_width += gap;
+        QImage* bigImg = new QImage(QSize((max_width)*childitem->childCount(), max_height),
+            childitem->child(0)->data(0, SPRITE_IMG).value<QImage*>()->format());
+
         bigImg->fill(QColor(0,0,0,0));
 
         for(size_t j=0; j<childitem->childCount(); ++j)
@@ -344,9 +354,6 @@ void SpriteSplitter::slotWriteSpriteSameSize()
                 else
                     newheight = max_height;
 
-//                QImage *tempimg = new QImage(QSize(newwidth,newheight),img->format());
-//                tempimg->fill(QColor(0,0,0,0));
-
                 int widthoffset = (newwidth - img->width())*0.5;
                 int heightoffset = (newheight - img->height())*0.5;
 
@@ -354,19 +361,19 @@ void SpriteSplitter::slotWriteSpriteSameSize()
                 for(int line = 0; line < img->height(); ++line)
                 {
 //                    memcpy(tempimg->scanLine(line + heightoffset) + (widthoffset * byteprepix), img->constScanLine(line),img->bytesPerLine());
-                    memcpy(bigImg->scanLine(line + heightoffset) + (j*max_width*byteprepix +(widthoffset * byteprepix)), img->constScanLine(line),img->bytesPerLine());
-                }
+                    //memcpy(bigImg->scanLine(line + heightoffset) + (j*max_width*byteprepix +(widthoffset * byteprepix + (j+1)*gap*byteprepix)), img->constScanLine(line),img->bytesPerLine());
+                    memcpy(bigImg->scanLine(line + heightoffset) + (j * max_width * byteprepix + (widthoffset * byteprepix)), img->constScanLine(line), img->bytesPerLine());
 
-//                tempimg->save(spritename_child,"PNG",100);
-//                delete tempimg;
+                }
             }
             else
             {
-//                img->save(spritename_child,"PNG",100);
                 int byteprepix = img->depth()>>3;
                 for(int line = 0; line < img->height(); ++line)
                 {
-                    memcpy(bigImg->scanLine(line) + (j*max_width * byteprepix), img->constScanLine(line),img->bytesPerLine());
+                    //memcpy(bigImg->scanLine(line) + (j*max_width * byteprepix + (j+1)*gap*byteprepix), img->constScanLine(line),img->bytesPerLine());
+                    //memcpy(bigImg->scanLine(line) + (j * max_width * byteprepix + (j + 1) * gap * byteprepix), img->constScanLine(line), img->bytesPerLine());
+                    memcpy(bigImg->scanLine(line) + (j * max_width * byteprepix), img->constScanLine(line), img->bytesPerLine());
                 }
             }
         }

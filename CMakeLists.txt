@@ -25,6 +25,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #endif()
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
+#find_package(OpenCV REQUIRED)
 
 if(ANDROID)
   add_library(GameToolKit SHARED
